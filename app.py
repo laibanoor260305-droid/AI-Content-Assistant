@@ -2,23 +2,19 @@ import os
 import streamlit as st
 from groq import Groq
 
-# Set page title and layout
 st.set_page_config(page_title="AI Content Assistant", page_icon="📝", layout="centered")
 
 st.title("📝 AI Content Assistant")
 st.write("Generate tailored posts, captions, and hashtags in seconds using Groq.")
 
-# Retrieve Groq API Key from Streamlit Secrets or Environment Variables
 api_key = st.secrets.get("GROQ_API_KEY") or os.environ.get("GROQ_API_KEY")
 
 if not api_key:
     st.warning("⚠️ GROQ_API_KEY is missing! Please configure it in your Streamlit Secrets or environment variables.")
     st.stop()
 
-# Initialize Groq Client
 client = Groq(api_key=api_key)
 
-# User Input Form
 with st.form("content_form"):
     col1, col2 = st.columns(2)
 
@@ -42,12 +38,10 @@ with st.form("content_form"):
 
     submitted = st.form_submit_button("🚀 Generate Content", use_container_width=True)
 
-# Process Generation
 if submitted:
     if not topic.strip():
         st.error("Please enter a topic before generating content.")
     else:
-        # Prompt definition
         system_prompt = (
             "You are an expert social media manager and digital content writer. "
             "Your output must be engaging, formatted cleanly, and directly tailored to the target platform and audience."
@@ -68,9 +62,9 @@ Formatting Requirements:
 
         with st.spinner("Generating content..."):
             try:
-                # API Call using a high-performance free-tier Groq model
+                # Updated model ID to standard supported Groq Llama 3 model
                 response = client.chat.completions.create(
-                    model="llama-3.3-70b-versatile",
+                    model="llama3-70b-8192",
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
@@ -84,7 +78,6 @@ Formatting Requirements:
                 st.subheader("📌 Generated Result")
                 st.markdown(generated_content)
 
-                # Download Option
                 st.download_button(
                     label="📥 Download Content as Text File",
                     data=generated_content,
